@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 require("dotenv").config();
+const { ObjectId } = require("mongodb");
 const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
@@ -22,6 +23,42 @@ async function run() {
       const cursor = productsCollection.find(query);
       const products = await cursor.toArray();
       res.send(products);
+    });
+    app.post("/products", async (req, res) => {
+      // console.log(req.body);
+      const product = req.body;
+      const result = await productsCollection.insertOne(product);
+      res.send(result);
+    });
+    app.get("/product/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const product = await productsCollection.findOne(query);
+      res.send(product);
+    });
+    // UPDATE USER
+    app.put("/product/:id", async (req, res) => {
+      const id = req.params.id;
+      const updateUser = req.body;
+      const filter = { _id: ObjectId(id) };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          quantity: updateUser.quantity,
+
+          // name: updateUser.name,
+          // email: updateUser.email
+          // updateUser,
+        },
+        $set: updateUser,
+      };
+
+      const result = await productsCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.send(result);
     });
   } finally {
   }
