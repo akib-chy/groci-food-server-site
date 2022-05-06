@@ -62,7 +62,7 @@ async function run() {
       const options = { upsert: true };
       const updateDoc = {
         $set: {
-          quantity: updateUser.quantity,
+          newQuantity: updateUser.quantity,
 
           // name: updateUser.name,
           // email: updateUser.email
